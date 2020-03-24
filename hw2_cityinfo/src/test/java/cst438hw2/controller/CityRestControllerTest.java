@@ -20,6 +20,8 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
+import java.util.List;
+
 import cst438hw2.domain.*;
 import cst438hw2.service.CityService;
 
@@ -49,32 +51,25 @@ public class CityRestControllerTest {
 
 	@Test
 	public void getCityInfo() throws Exception {
-		// input Reservation request
-    	CityService attempt =  
-    			new CityService();
-    	attempt.setDate("20200101");
-    	attempt.setFlightNo("Otter 101");
-    	attempt.setNumTickets(2);
-    	attempt.setUserName("testUser");
-    	
-    	// expected Reservation to be returned
-    	CityService expected= 
- 	    	   new CityService(198113, "Otter 101", "testUser", "Monterey", "Seattle", "20200101", "0800 AM", 2, 244.02, 73, "test weather", "OK");
+		// input cityInfo request
+		CityInfo attempt = new CityInfo(0, "OtterCity", "USA", "United States", "District 9", 9, 300.0, "101");
+
+    	// expected cityInfo to be returned
+    	CityInfo expected = new CityInfo(0, "OtterCity", "USA", "United States", "District 9", 9, 80.0, "4:00:00 PM");
     	
     	// stub out the Reservation Service class 
-    	 given(reservationService.createReservation(attempt))
+    	 given(cityService.getCityInfo("OtterCity"))
                  .willReturn(expected);
     	 
     	// when
          MockHttpServletResponse response = mvc.perform(
-                 post("/reservations").contentType(MediaType.APPLICATION_JSON)
-                         .content(jsonReservationAttempt.write(attempt).getJson()))
+                 get("/api/cities/OtterCity").contentType(MediaType.APPLICATION_JSON)
+                         .content(json.write(attempt).getJson()))
                  .andReturn().getResponse();
 
          // then
-         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
          assertThat(response.getContentAsString()).isEqualTo(
-                 jsonReservationAttempt.write(expected).getJson());
+                 json.write(expected).getJson());
 	}
 
 }

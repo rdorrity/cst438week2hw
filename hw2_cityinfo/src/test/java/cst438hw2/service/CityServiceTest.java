@@ -1,5 +1,6 @@
 package cst438hw2.service;
  
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.BDDMockito.given;
@@ -14,6 +15,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+
+
+
 import static org.mockito.ArgumentMatchers.anyString;
 
 import cst438hw2.domain.*;
@@ -41,18 +45,56 @@ public class CityServiceTest {
 
 	@Test
 	public void testCityFound() throws Exception {
-		// TODO 
+		City testCity1 = 
+				new City(0, "OtterCity", "USA", "District 9", 9);    	
+  
+        // mocked cityRepository will return testCity1 when findByName("OtterCity") is called
+		given(cityRepository.findByName("OtterCity")).willReturn(List.of(testCity1));
+        given(countryRepository.findByCode("USA")).willReturn(new Country("USA", "United States"));
+        given(weatherService.getTempAndTime("OtterCity")).willReturn(new TempAndTime(300.0, 101, 0));
+        
+        // call the cityService
+        CityInfo actual   = cityService.getCityInfo("OtterCity");
+        CityInfo expected = new CityInfo(0, "OtterCity", "USA", "United States", "District 9", 9, 80.0, "4:00:00 PM");
+        
+        assertThat( actual ).isEqualTo(expected);
 	}
 	
 	@Test 
 	public void  testCityNotFound() {
-		// TODO 
+//		City testCity1 = 
+//				new City(0, "OtterCity", "USA", "District 9", 9);   	
+  
+        // mocked cityRepository will return testCity1 when findByName("OtterCity") is called
+		given(cityRepository.findByName("OtterCity")).willReturn(null);
+        given(countryRepository.findByCode("USA")).willReturn(new Country("USA", "United States"));
+        given(weatherService.getTempAndTime("OtterCity")).willReturn(new TempAndTime(300.0, 101, 0));
+        
+        // call the cityService
+        CityInfo actual   = cityService.getCityInfo("OtterCity");
+        CityInfo expected = null;
+        
+        assertThat( actual ).isEqualTo(expected);
 	}
 	
 	@Test 
 	public void  testCityMultiple() {
-		// TODO 
-		
+		City testCity1 = 
+				new City(0, "OtterCity", "USA", "District 9", 9);
+		City testCity2 = 
+				new City(1, "OtterCity", "USA", "District 8", 9);
+    	
+  
+        // mocked cityRepository will return testCity1 when findByName("OtterCity") is called
+		given(cityRepository.findByName("OtterCity")).willReturn(List.of(testCity1, testCity2));
+        given(countryRepository.findByCode("USA")).willReturn(new Country("USA", "United States"));
+        given(weatherService.getTempAndTime("OtterCity")).willReturn(new TempAndTime(300.0, 101, 0));
+        
+        // call the cityService
+        CityInfo actual   = cityService.getCityInfo("OtterCity");
+        CityInfo expected = new CityInfo(0, "OtterCity", "USA", "United States", "District 9", 9, 80.0, "4:00:00 PM");
+
+        assertThat( actual ).isEqualTo(expected);
 	}
 
 }
